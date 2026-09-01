@@ -1,0 +1,21 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: bym-oslo-kommune-no
+
+resources:
+  - ../../../base
+
+labels:
+  - pairs:
+      app.kubernetes.io/instance: fint-flyt-integration-configuration-service_bym-oslo-kommune-no
+      fintlabs.no/org-id: bym.oslo.kommune.no
+
+patches:
+  - patch: |-
+      - op: replace
+        path: "/spec/orgId"
+        value: "bym.oslo.kommune.no"
+
+    target:
+      kind: Application
+      name: fint-flyt-integration-configuration-service

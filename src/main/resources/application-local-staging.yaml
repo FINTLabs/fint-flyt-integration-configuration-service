@@ -1,0 +1,10 @@
+spring:
+  datasource:
+    hikari:
+      schema: public
+    url: jdbc:postgresql://localhost:5441/fint-flyt-integration-configuration-service
+    username: postgres
+    password: password
+
+server:
+  port: 8095
