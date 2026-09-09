@@ -22,3 +22,10 @@ ktlint_functional_experimental_trailing-comma-on-call-site = enabled
 
 # Do not use function expression body
 ktlint_standard_function-expression-body = disabled
+
+# Flyway beregner checksum på filinnhold. Filene er kopiert byte-for-byte fra de gamle
+# tjenestene, og enhver reformatering vil gi checksum-avvik og stoppe oppstart.
+# configuration/V2__add_audit_columns_to_configuration.sql mangler faktisk final newline.
+[src/main/resources/db/migration/**]
+insert_final_newline = false
+trim_trailing_whitespace = false

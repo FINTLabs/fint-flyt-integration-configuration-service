@@ -6,6 +6,7 @@ spring:
           time_zone: UTC
           lob:
             non_contextual_creation: true
+        enable_lazy_load_no_trans: true
     hibernate:
       ddl-auto: none
   datasource:
@@ -13,5 +14,22 @@ spring:
     username: ${fint.database.username}
     url: ${fint.database.url}
     password: ${fint.database.password}
-    hikari:
-      schema: ${fint.database.username}
+
+novari:
+  flyt:
+    catalog:
+      # Taket er uendret fra de fire gamle tjenestene, som alle arvet Hikari-defaulten på 10.
+      # minimum-idle senkes fordi fire pooler nå deler én pod og ikke trenger 40 hvilende tilkoblinger.
+      datasource:
+        integration:
+          maximum-pool-size: 10
+          minimum-idle: 2
+        configuration:
+          maximum-pool-size: 10
+          minimum-idle: 2
+        value-converting:
+          maximum-pool-size: 10
+          minimum-idle: 2
+        discovery:
+          maximum-pool-size: 10
+          minimum-idle: 2

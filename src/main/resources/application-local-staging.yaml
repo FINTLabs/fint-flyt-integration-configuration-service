@@ -1,7 +1,11 @@
+novari:
+  flyt:
+    catalog:
+      database:
+        schema-prefix: ""
+
 spring:
   datasource:
-    hikari:
-      schema: public
     url: jdbc:postgresql://localhost:5441/fint-flyt-intgr-conf-service
     username: postgres
     password: password
