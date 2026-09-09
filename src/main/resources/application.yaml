@@ -1,0 +1,11 @@
+fint:
+  application-id: fint-flyt-integration-configuration-service
+
+spring:
+  profiles:
+    include:
+      - flyt-logging
+      - flyt-postgres
+  output:
+    ansi:
+      enabled: always

@@ -1,0 +1,21 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: tromsfylke-no
+
+resources:
+  - ../../../base
+
+labels:
+  - pairs:
+      app.kubernetes.io/instance: fint-flyt-integration-configuration-service_tromsfylke_no
+      fintlabs.no/org-id: tromsfylke.no
+
+patches:
+  - patch: |-
+      - op: replace
+        path: "/spec/orgId"
+        value: "tromsfylke.no"
+
+    target:
+      kind: Application
+      name: fint-flyt-integration-configuration-service

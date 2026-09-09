@@ -1,0 +1,17 @@
+spring:
+  jpa:
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+          lob:
+            non_contextual_creation: true
+    hibernate:
+      ddl-auto: none
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    username: ${fint.database.username}
+    url: ${fint.database.url}
+    password: ${fint.database.password}
+    hikari:
+      schema: ${fint.database.username}

@@ -1,0 +1,66 @@
+apiVersion: fintlabs.no/v1alpha1
+kind: Application
+metadata:
+  name: fint-flyt-integration-configuration-service
+  namespace: fintlabs-no
+  labels:
+    app.kubernetes.io/name: fint-flyt-integration-configuration-service
+    app.kubernetes.io/instance: fint-flyt-integration-configuration-service_fintlabs_no
+    app.kubernetes.io/version: latest
+    app.kubernetes.io/component: backend
+    app.kubernetes.io/part-of: fint-flyt
+    fintlabs.no/team: flyt
+    fintlabs.no/org-id: fintlabs.no
+# Kafka er bevisst utelatt: topic-konfigurasjon opprettes og endres når konsument-bønnene
+# bygges, altså ved oppstart. En tjeneste som deployes med Kafka aktivert før et domene er
+# migrert, ville kunne endre topics som fortsatt eies av de gamle tjenestene. Kafka legges
+# til per domenesteg, sammen med domenet som trenger det.
+spec:
+  port: 8080
+  imagePullPolicy: Always
+  orgId: fintlabs.no
+  image: ghcr.io/fintlabs/fint-flyt-integration-configuration-service:sha-0000000
+  database:
+    database: fint-flyt
+  env:
+    - name: JAVA_TOOL_OPTIONS
+      value: '-XX:+ExitOnOutOfMemoryError -Xmx768M -Xms768M'
+  resources:
+    limits:
+      memory: "1024Mi"
+      cpu: "500m"
+    requests:
+      memory: "512Mi"
+      cpu: "50m"
+  probes:
+    startup:
+      path: /actuator/health
+      port: 8080
+      initialDelaySeconds: 70
+      failureThreshold: 12
+      periodSeconds: 10
+      timeoutSeconds: 3
+    readiness:
+      path: /actuator/health/readiness
+      port: 8080
+      initialDelaySeconds: 0
+      failureThreshold: 5
+      periodSeconds: 10
+      timeoutSeconds: 3
+    liveness:
+      path: /actuator/health/liveness
+      port: 8080
+      initialDelaySeconds: 0
+      failureThreshold: 5
+      periodSeconds: 10
+      timeoutSeconds: 3
+  observability:
+    metrics:
+      enabled: true
+      port: "8080"
+      path: /actuator/prometheus
+  restartPolicy: Always
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate: { maxSurge: 1, maxUnavailable: 0 }
