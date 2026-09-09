@@ -18,4 +18,4 @@ patches:
 
     target:
       kind: Application
-      name: fint-flyt-integration-configuration-service
+      name: fint-flyt-intgr-conf-service

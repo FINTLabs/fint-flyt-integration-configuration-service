@@ -54,7 +54,7 @@ SPRING_PROFILES_ACTIVE=local-staging ./gradlew bootRun  # kjører på port 8095
 
 ## Utrulling
 
-- `kustomize/base/` — `Application`-ressursen for fint-flyt-integration-configuration-service.
+- `kustomize/base/` — `Application`-ressursen for fint-flyt-intgr-conf-service.
 - `kustomize/overlays/<org>/<env>/` — genereres per tenant og miljø.
 - `kustomize/templates/overlay.yaml.tpl` — envsubst-malen alle overlays rendres fra.
 

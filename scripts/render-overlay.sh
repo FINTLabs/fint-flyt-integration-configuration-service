@@ -25,7 +25,7 @@ while IFS= read -r file; do
 
   export NAMESPACE="$namespace"
   export ORG_ID="${namespace//-/.}"
-  export APP_INSTANCE="fint-flyt-integration-configuration-service_$(app_instance_suffix "$namespace")"
+  export APP_INSTANCE="fint-flyt-intgr-conf-service_$(app_instance_suffix "$namespace")"
 
   tmp="$(mktemp)"
   envsubst < "$BASE_TEMPLATE" > "$tmp"

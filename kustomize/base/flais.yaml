@@ -1,11 +1,11 @@
 apiVersion: fintlabs.no/v1alpha1
 kind: Application
 metadata:
-  name: fint-flyt-integration-configuration-service
+  name: fint-flyt-intgr-conf-service
   namespace: fintlabs-no
   labels:
-    app.kubernetes.io/name: fint-flyt-integration-configuration-service
-    app.kubernetes.io/instance: fint-flyt-integration-configuration-service_fintlabs_no
+    app.kubernetes.io/name: fint-flyt-intgr-conf-service
+    app.kubernetes.io/instance: fint-flyt-intgr-conf-service_fintlabs_no
     app.kubernetes.io/version: latest
     app.kubernetes.io/component: backend
     app.kubernetes.io/part-of: fint-flyt
@@ -19,7 +19,7 @@ spec:
   port: 8080
   imagePullPolicy: Always
   orgId: fintlabs.no
-  image: ghcr.io/fintlabs/fint-flyt-integration-configuration-service:sha-0000000
+  image: ghcr.io/fintlabs/fint-flyt-intgr-conf-service:sha-0000000
   database:
     database: fint-flyt
   env:
