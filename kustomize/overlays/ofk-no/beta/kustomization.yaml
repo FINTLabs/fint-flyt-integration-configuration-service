@@ -7,7 +7,7 @@ resources:
 
 labels:
   - pairs:
-      app.kubernetes.io/instance: fint-flyt-integration-configuration-service_ofk_no
+      app.kubernetes.io/instance: fint-flyt-intgr-conf-service_ofk_no
       fintlabs.no/org-id: ofk.no
 
 patches:
@@ -18,4 +18,4 @@ patches:
 
     target:
       kind: Application
-      name: fint-flyt-integration-configuration-service
+      name: fint-flyt-intgr-conf-service

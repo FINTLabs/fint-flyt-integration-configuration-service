@@ -1,5 +1,5 @@
 fint:
-  application-id: fint-flyt-integration-configuration-service
+  application-id: fint-flyt-intgr-conf-service
 
 spring:
   profiles:
