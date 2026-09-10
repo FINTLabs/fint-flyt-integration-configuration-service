@@ -13,17 +13,12 @@ import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.DependsOn
-import org.springframework.context.annotation.Primary
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 import org.springframework.orm.jpa.JpaTransactionManager
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean
 import org.springframework.transaction.PlatformTransactionManager
 import javax.sql.DataSource
 
-/**
- * Configuration er den primære persistence uniten. Uten en @Primary-kandidat feiler Spring Boots
- * autokonfigurasjon på flertydighet — blant annet er JpaBaseConfiguration @ConditionalOnSingleCandidate.
- */
 @Configuration(proxyBeanMethods = false)
 @EnableJpaRepositories(
     basePackages = ["no.novari.flyt.catalog.configuration"],
@@ -32,7 +27,6 @@ import javax.sql.DataSource
 )
 class ConfigurationPersistenceConfig {
     @Bean
-    @Primary
     @ConfigurationProperties("novari.flyt.catalog.datasource.configuration")
     fun configurationDataSource(
         properties: DataSourceProperties,
@@ -46,7 +40,6 @@ class ConfigurationPersistenceConfig {
     ): Flyway = catalogFlyway(dataSource, schemas.configuration, "configuration")
 
     @Bean
-    @Primary
     @DependsOn("configurationFlyway")
     fun configurationEntityManagerFactory(
         builder: EntityManagerFactoryBuilder,
@@ -59,7 +52,6 @@ class ConfigurationPersistenceConfig {
             .build()
 
     @Bean
-    @Primary
     fun configurationTransactionManager(
         @Qualifier("configurationEntityManagerFactory") entityManagerFactory: EntityManagerFactory,
     ): PlatformTransactionManager = JpaTransactionManager(entityManagerFactory)

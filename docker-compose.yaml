@@ -12,6 +12,7 @@ services:
       POSTGRES_PASSWORD: password
     volumes:
       - postgres-data:/var/lib/postgresql/data
+      - ./scripts/local-postgres-init.sql:/docker-entrypoint-initdb.d/10-own-schema.sql:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d fint-flyt-intgr-conf-service"]
       interval: 5s

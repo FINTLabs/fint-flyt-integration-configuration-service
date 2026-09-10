@@ -4,6 +4,7 @@ import jakarta.persistence.EntityManagerFactory
 import no.novari.flyt.catalog.database.CatalogSchemas
 import org.assertj.core.api.Assertions.assertThat
 import org.flywaydb.core.Flyway
+import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
@@ -13,9 +14,11 @@ import org.springframework.context.ApplicationContext
 import org.springframework.test.context.DynamicPropertyRegistry
 import org.springframework.test.context.DynamicPropertySource
 import org.springframework.test.context.TestPropertySource
+import org.springframework.transaction.PlatformTransactionManager
 import org.testcontainers.containers.PostgreSQLContainer
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
+import java.sql.DriverManager
 import javax.sql.DataSource
 
 @SpringBootTest
@@ -35,6 +38,7 @@ class ApplicationTest {
 
     @ParameterizedTest
     @CsvSource(
+        "ownSchemaDataSource,       own",
         "integrationDataSource,     integration",
         "configurationDataSource,   configuration",
         "valueConvertingDataSource, valueConverting",
@@ -84,11 +88,18 @@ class ApplicationTest {
     }
 
     @Test
-    fun `the configuration persistence unit is the primary one`() {
+    fun `the service's own empty schema is the primary persistence unit`() {
         assertThat(context.getBean(DataSource::class.java))
-            .isSameAs(context.getBean("configurationDataSource"))
+            .isSameAs(context.getBean("ownSchemaDataSource"))
         assertThat(context.getBean(EntityManagerFactory::class.java))
-            .isSameAs(context.getBean("configurationEntityManagerFactory"))
+            .isSameAs(context.getBean("ownSchemaEntityManagerFactory"))
+        assertThat(context.getBean(PlatformTransactionManager::class.java))
+            .isSameAs(context.getBean("ownSchemaTransactionManager"))
+    }
+
+    @Test
+    fun `the primary persistence unit has no entities, so an unqualified write cannot reach domain data`() {
+        assertThat(entityNamesOf("ownSchemaEntityManagerFactory")).isEmpty()
     }
 
     @Test
@@ -111,6 +122,7 @@ class ApplicationTest {
 
     private fun schemaOf(property: String): String =
         when (property) {
+            "own" -> schemas.own
             "integration" -> schemas.integration
             "configuration" -> schemas.configuration
             "valueConverting" -> schemas.valueConverting
@@ -130,6 +142,18 @@ class ApplicationTest {
         @Container
         @JvmStatic
         val postgres: PostgreSQLContainer<*> = PostgreSQLContainer("postgres:17-alpine")
+
+        // I drift oppretter pgerator dette skjemaet sammen med databasebrukeren. Ingen Flyway-konfigurasjon
+        // eier det, så testen må opprette det selv for å speile oppsettet appen møter.
+        @BeforeAll
+        @JvmStatic
+        fun createOwnSchema() {
+            DriverManager.getConnection(postgres.jdbcUrl, postgres.username, postgres.password).use { connection ->
+                connection.createStatement().use {
+                    it.execute("CREATE SCHEMA IF NOT EXISTS ${CatalogSchemas.OWN_SCHEMA}")
+                }
+            }
+        }
 
         // @ServiceConnection bidrar med en JdbcConnectionDetails-bønne, ikke spring.datasource.*,
         // og de fire datakildene bygges fra DataSourceProperties.

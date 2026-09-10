@@ -21,6 +21,10 @@ novari:
       # Taket er uendret fra de fire gamle tjenestene, som alle arvet Hikari-defaulten på 10.
       # minimum-idle senkes fordi fire pooler nå deler én pod og ikke trenger 40 hvilende tilkoblinger.
       datasource:
+        # Eget skjema er tomt og ubrukt; poolen finnes bare fordi bønnen er primærkandidat.
+        own:
+          maximum-pool-size: 2
+          minimum-idle: 0
         integration:
           maximum-pool-size: 10
           minimum-idle: 2

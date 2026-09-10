@@ -29,10 +29,25 @@ Tjenesten migrerer ikke data. Hvert domene beholder skjemaet den gamle tjenesten
 og Envers tillater kun én revisjonsentitet per persistence unit.
 
 Hvert domene har derfor sin egen `DataSource`, `EntityManagerFactory`, `PlatformTransactionManager`
-og `Flyway`, satt opp i `<Domene>PersistenceConfig` i domenepakken. Configuration er merket
-`@Primary` — uten en primærkandidat feiler Spring Boots autokonfigurasjon på flertydighet.
-Kun configuration og valueconverting registrerer revisjonsentiteten fra `flyt-audit-starter`, slik
-at hver av dem løser `revinfo` mot sitt eget skjema.
+og `Flyway`, satt opp i `<Domene>PersistenceConfig` i domenepakken. De fire er likestilte — ingen av
+dem er primærkandidat. Kun configuration og valueconverting registrerer revisjonsentiteten fra
+`flyt-audit-starter`, slik at hver av dem løser `revinfo` mot sitt eget skjema.
+
+### Primærkandidaten er tjenestens eget skjema
+
+Spring Boots autokonfigurasjon krever én `@Primary` `DataSource` og `EntityManagerFactory`.
+Den rollen har `OwnSchemaPersistenceConfig`, som peker på tjenestens eget skjema — det pgerator
+oppretter etter applikasjonsnavnet. Skjemaet er tomt og ubrukt, og persistence uniten har ingen
+entiteter.
+
+At det er tomt er poenget. En `@Transactional`, en `EntityManager` eller et repository som glemmer
+sin qualifier faller tilbake på primærkandidaten. Peker den på et domeneskjema, leser eller skriver
+feilen stille mot ekte data; peker den på det tomme skjemaet, feiler den på manglende tabell med én
+gang. Valget gjør også de fire domenene symmetriske, framfor at ett av dem er privilegert av en
+vilkårlig grunn.
+
+Skulle katalogen senere få tabeller som deles av alle domenene — eller de fire skjemaene bli
+konsolidert — er det dette skjemaet de hører hjemme i, og primærkandidaten peker allerede dit.
 
 ### Skjemanavn
 
@@ -72,6 +87,10 @@ Forutsetninger:
 
 - Java 25
 - Docker (for Docker Compose og for Testcontainers i testene)
+
+`docker-compose.yaml` monterer `scripts/local-postgres-init.sql`, som oppretter tjenestens eget
+skjema slik pgerator gjør i drift. Skriptet kjører bare når datavolumet er tomt — har du et volum
+fra før, trengs `docker compose down -v` én gang.
 
 ```shell
 docker compose up -d                                    # PostgreSQL på localhost:5441

@@ -3,6 +3,7 @@ package no.novari.flyt.catalog.database
 class CatalogSchemas(
     schemaPrefix: String,
 ) {
+    val own = schemaPrefix + OWN_SCHEMA
     val integration = schemaPrefix + "fint_flyt_integration_service_db"
     val configuration = schemaPrefix + "fint_flyt_configuration_service_db"
     val valueConverting = schemaPrefix + "fint_flyt_value_converting_service_db"

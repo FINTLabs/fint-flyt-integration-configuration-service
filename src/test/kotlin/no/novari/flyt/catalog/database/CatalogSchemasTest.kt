@@ -35,6 +35,7 @@ class CatalogSchemasTest {
     fun `the four schema names carry the tenant prefix of the old services`() {
         val schemas = CatalogSchemas("afk_no_")
 
+        assertThat(schemas.own).isEqualTo("afk_no_fint_flyt_intgr_conf_service_db")
         assertThat(schemas.integration).isEqualTo("afk_no_fint_flyt_integration_service_db")
         assertThat(schemas.configuration).isEqualTo("afk_no_fint_flyt_configuration_service_db")
         assertThat(schemas.valueConverting).isEqualTo("afk_no_fint_flyt_value_converting_service_db")
