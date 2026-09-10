@@ -66,12 +66,22 @@ Migreringene fra de fire gamle tjenestene ligger under hver sin katalog i
 `src/main/resources/db/migration/`, med én `Flyway`-bønne per skjema. Hvert skjema har allerede sin
 egen `flyway_schema_history`, så versjonsnumrene kolliderer ikke selv om alle fire har en `V1__init.sql`.
 
-**`.sql`-filene er kopiert byte-for-byte og må aldri reformateres.** Flyway beregner checksum på
-filinnhold, så et enkelt linjeskift gir checksum-avvik og stopper oppstart. `.editorconfig` slår
-derfor av `insert_final_newline` og `trim_trailing_whitespace` for katalogen.
+I drift er alle migreringene allerede kjørt, så Flyway gjør ikke annet enn å validere mot
+historikken de gamle tjenestene skrev. Det er nettopp verdien: applikasjonen verifiserer ved
+oppstart at den snakker med det skjemaet den tror.
 
-I drift er alle migreringene allerede kjørt, så Flyway gjør ikke annet enn å validere. Det er
-nettopp verdien: applikasjonen verifiserer ved oppstart at den snakker med det skjemaet den tror.
+**`.sql`-filene er kopiert byte-for-byte og må aldri endres.** Flyway sammenligner `script` og
+`checksum` mot radene som allerede står i `flyway_schema_history`; avviker de, stopper oppstarten.
+
+Checksummen beregnes linje for linje over filinnholdet. Linjeskift, final newline og blanke linjer
+påvirker den derfor ikke, men **trailing whitespace gjør det** — og det er nettopp den slags endring
+en editor gjør uoppfordret. `.editorconfig` slår av `trim_trailing_whitespace` for katalogen, og
+`insert_final_newline` i tillegg, slik at filene forblir byte-identiske med originalene.
+
+`src/test/resources/legacy-flyway-checksums.txt` holder checksummene hentet fra de gamle repoene, og
+en test sammenligner filene mot dem. Endres en migrering, feiler CI med filnavn og begge verdiene.
+Den filen skal ikke oppdateres for å få testen grønn — da er invarianten brutt, og migreringen skal
+tilbakestilles.
 
 ## Kafka
 

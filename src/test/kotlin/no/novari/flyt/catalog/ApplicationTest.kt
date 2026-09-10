@@ -79,6 +79,35 @@ class ApplicationTest {
         assertThat(flyway.info().applied().mapNotNull { it.script }).noneMatch { it.contains("/") }
     }
 
+    /**
+     * Testen over validerer mot historikk de samme filene nettopp skrev, og kan derfor ikke oppdage at
+     * en kopiert migrering har kommet i utakt med originalen. I drift møter Flyway historikk de gamle
+     * tjenestene skrev, og sammenligner `script` og `checksum` mot den. Begge feltene er derfor pinnet
+     * mot verdiene fra de gamle repoene, ikke mot våre egne kopier.
+     */
+    @ParameterizedTest
+    @CsvSource(
+        "integrationFlyway,     integration",
+        "configurationFlyway,   configuration",
+        "valueConvertingFlyway, valueconverting",
+        "discoveryFlyway,       discovery",
+    )
+    fun `the migrations still carry the checksums the old services recorded in production`(
+        beanName: String,
+        domain: String,
+    ) {
+        val flyway = context.getBean(beanName, Flyway::class.java)
+
+        val actual =
+            flyway
+                .info()
+                .all()
+                .filter { it.version != null }
+                .associate { it.script to it.checksum }
+
+        assertThat(actual).containsExactlyInAnyOrderEntriesOf(LEGACY_CHECKSUMS.getValue(domain))
+    }
+
     @Test
     fun `only the two envers-audited persistence units register the revision entity`() {
         assertThat(entityNamesOf("configurationEntityManagerFactory")).contains(REVISION_ENTITY)
@@ -138,6 +167,16 @@ class ApplicationTest {
 
     companion object {
         private const val REVISION_ENTITY = "ActorRevisionEntity"
+
+        private val LEGACY_CHECKSUMS: Map<String, Map<String, Int>> =
+            ApplicationTest::class.java
+                .getResourceAsStream("/legacy-flyway-checksums.txt")!!
+                .bufferedReader()
+                .readLines()
+                .filterNot { it.isBlank() || it.startsWith("#") }
+                .map { it.split("|") }
+                .groupBy({ it[0] }, { it[1] to it[2].toInt() })
+                .mapValues { (_, entries) -> entries.toMap() }
 
         @Container
         @JvmStatic
