@@ -1,0 +1,31 @@
+# Flyway-checksummene de fire gamle tjenestene skrev i sine flyway_schema_history-tabeller.
+#
+# Dette er den autoritative kopien. Verdiene er hentet fra migreringsfilene i de gamle repoene, ikke
+# fra våre egne kopier, og er det produksjonsdatabasene faktisk har lagret. Matcher ikke filene her,
+# vil Flyway avvise oppstart i drift.
+#
+# Hentet 10. september 2026 med Flyway 11.7.2 fra main i:
+#   fint-flyt-integration-service       226267d
+#   fint-flyt-configuration-service     d072404
+#   fint-flyt-value-converting-service  a6a92e3
+#   fint-flyt-discovery-service         48003de
+#
+# Endres en migreringsfil, skal denne filen IKKE oppdateres for å få testen grønn — da er
+# produksjonsinvarianten brutt, og filen skal tilbakestilles.
+#
+# domene|script|checksum
+integration|V1__init.sql|19204267
+integration|V2__add_audit_columns_to_integration.sql|-1231017096
+configuration|V1__init.sql|1699316805
+configuration|V2__add_audit_columns_to_configuration.sql|-774839269
+configuration|V3__widen_text_columns.sql|-2130983336
+configuration|V4__configuration_audit_columns.sql|-204864190
+configuration|V5__revinfo.sql|-1043531327
+configuration|V6__configuration_aud.sql|-1513755574
+valueconverting|V1__init.sql|2129157644
+valueconverting|V2__revinfo.sql|-1043531327
+valueconverting|V3__value_converting_audit_columns.sql|-1001940479
+valueconverting|V4__value_converting_aud.sql|950550462
+valueconverting|V5__converting_map_aud_revision_operation_key.sql|-1816979144
+discovery|V1__init.sql|-1419606036
+discovery|V2__add_audit_columns_to_integration_metadata.sql|-636948023
